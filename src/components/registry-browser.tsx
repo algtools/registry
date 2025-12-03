@@ -21,6 +21,14 @@ interface RegistryItem {
 	description: string
 }
 
+interface RegistriesResponse {
+	registries: Registry[]
+}
+
+interface RegistryResponse {
+	items: RegistryItem[]
+}
+
 export function RegistryBrowser() {
 	const [registries, setRegistries] = React.useState<Registry[]>([])
 	const [selectedRegistry, setSelectedRegistry] = React.useState<string | null>(null)
@@ -29,7 +37,7 @@ export function RegistryBrowser() {
 
 	React.useEffect(() => {
 		fetch("/api/registries")
-			.then((res) => res.json())
+			.then((res) => res.json() as Promise<RegistriesResponse>)
 			.then((data) => {
 				setRegistries(data.registries || [])
 				if (data.registries && data.registries.length > 0) {
@@ -56,7 +64,7 @@ export function RegistryBrowser() {
 			: registry.registryUrl
 
 		fetch(fetchUrl)
-			.then((res) => res.json())
+			.then((res) => res.json() as Promise<RegistryResponse>)
 			.then((data) => {
 				setItems(data.items || [])
 			})
