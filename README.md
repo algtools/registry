@@ -14,16 +14,14 @@ A Next.js application that allows you to browse and use components from multiple
 
 ### Installation
 
-> **Note:** This project uses `npm` (detected `package-lock.json` without `pnpm-lock.yaml`). If you prefer to use `pnpm`, delete `package-lock.json` and run `pnpm install` to generate `pnpm-lock.yaml`.
-
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the registry browser.
@@ -33,7 +31,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the registry browser.
 To build your registry and generate the static JSON files:
 
 ```bash
-npm run registry:build
+pnpm registry:build
 ```
 
 This will generate registry files in the `public/r/` directory that are compatible with the `shadcn` CLI.
@@ -130,10 +128,8 @@ To use your custom registry with the shadcn CLI, configure it in your project's 
 Then set your registry URL:
 
 ```bash
-npx shadcn@latest add button --registry https://your-domain.com
+pnpm dlx shadcn@latest add button --registry https://your-domain.com
 ```
-
-> **Note:** This project uses `npm`. If you switch to `pnpm`, update all commands accordingly.
 
 ## Adding Components
 
