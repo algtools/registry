@@ -1,0 +1,20 @@
+{
+	"registries": [
+		{
+			"id": "official",
+			"name": "Official shadcn/ui",
+			"url": "https://ui.shadcn.com",
+			"registryUrl": "https://ui.shadcn.com/registry/index.json",
+			"description": "The official shadcn/ui component registry",
+			"enabled": true
+		},
+		{
+			"id": "custom",
+			"name": "Custom Registry",
+			"url": "/",
+			"registryUrl": "/api/registry",
+			"description": "Custom components registry",
+			"enabled": true
+		}
+	]
+}

@@ -1,63 +1,182 @@
-# Next.js Framework Starter
+# Unified Registry Browser
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/next-starter-template)
+A Next.js application that allows you to browse and use components from multiple shadcn registries in one place. This project is based on the [shadcn registry-template](https://github.com/shadcn-ui/registry-template) and extends it to support multiple registries.
 
-<!-- dash-content-start -->
+## Features
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It's deployed on Cloudflare Workers as a [static website](https://developers.cloudflare.com/workers/static-assets/).
-
-This template uses [OpenNext](https://opennext.js.org/) via the [OpenNext Cloudflare adapter](https://opennext.js.org/cloudflare), which works by taking the Next.js build output and transforming it, so that it can run in Cloudflare Workers.
-
-<!-- dash-content-end -->
-
-Outside of this repo, you can start a new project with this template using [C3](https://developers.cloudflare.com/pages/get-started/c3/) (the `create-cloudflare` CLI):
-
-```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/next-starter-template
-```
-
-A live public deployment of this template is available at [https://next-starter-template.templates.workers.dev](https://next-starter-template.templates.workers.dev)
+- 🎨 Browse components from multiple shadcn registries
+- 🔄 Switch between different registries seamlessly
+- 📦 Build and serve your own custom registry
+- 🚀 Compatible with the `shadcn` CLI
+- 🌐 Proxy support for external registries
 
 ## Getting Started
 
-First, run:
+### Installation
 
 ```bash
 npm install
 # or
-yarn install
-# or
 pnpm install
-# or
-bun install
 ```
 
-Then run the development server (using the package manager of your choice):
+### Development
 
 ```bash
 npm run dev
+# or
+pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the registry browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Building Your Registry
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+To build your registry and generate the static JSON files:
 
-## Deploying To Production
+```bash
+npm run registry:build
+# or
+pnpm registry:build
+```
 
-| Command                           | Action                                       |
-| :-------------------------------- | :------------------------------------------- |
-| `npm run build`                   | Build your production site                   |
-| `npm run preview`                 | Preview your build locally, before deploying |
-| `npm run build && npm run deploy` | Deploy your production site to Cloudflare    |
-| `npm wrangler tail`               | View real-time logs for all Workers          |
+This will generate registry files in the `public/r/` directory that are compatible with the `shadcn` CLI.
+
+## Adding Registries
+
+Edit `registries-config.json` to add or remove registries:
+
+```json
+{
+	"registries": [
+		{
+			"id": "official",
+			"name": "Official shadcn/ui",
+			"url": "https://ui.shadcn.com",
+			"registryUrl": "https://ui.shadcn.com/registry/index.json",
+			"description": "The official shadcn/ui component registry",
+			"enabled": true
+		},
+		{
+			"id": "custom",
+			"name": "Custom Registry",
+			"url": "/",
+			"registryUrl": "/api/registry",
+			"description": "Custom components registry",
+			"enabled": true
+		}
+	]
+}
+```
+
+### Registry Configuration
+
+- `id`: Unique identifier for the registry
+- `name`: Display name for the registry
+- `url`: Base URL of the registry website
+- `registryUrl`: URL to fetch the registry JSON (can be local `/api/registry` or external)
+- `description`: Description shown in the UI
+- `enabled`: Whether this registry is active
+
+## Project Structure
+
+```
+.
+├── registry.json              # Main registry definition
+├── registries-config.json     # Configuration for multiple registries
+├── components.json            # shadcn CLI configuration
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── registry/     # API routes for serving registries
+│   │   ├── page.tsx          # Main page with registry browser
+│   │   └── layout.tsx         # Root layout
+│   ├── components/
+│   │   ├── ui/               # shadcn UI components
+│   │   └── registry-browser.tsx  # Main registry browser component
+│   ├── lib/
+│   │   └── utils.ts          # Utility functions
+│   └── registry/             # Your custom registry components
+│       └── new-york/
+│           └── blocks/
+└── public/
+    └── r/                    # Built registry files (generated)
+```
+
+## Using with shadcn CLI
+
+To use your custom registry with the shadcn CLI, configure it in your project's `components.json`:
+
+```json
+{
+	"$schema": "https://ui.shadcn.com/schema.json",
+	"style": "new-york",
+	"rsc": true,
+	"tsx": true,
+	"tailwind": {
+		"config": "",
+		"css": "app/globals.css",
+		"baseColor": "neutral",
+		"cssVariables": true,
+		"prefix": ""
+	},
+	"aliases": {
+		"components": "@/components",
+		"utils": "@/lib/utils",
+		"ui": "@/components/ui",
+		"lib": "@/lib",
+		"hooks": "@/hooks"
+	},
+	"iconLibrary": "lucide"
+}
+```
+
+Then set your registry URL:
+
+```bash
+npx shadcn@latest add button --registry https://your-domain.com
+```
+
+## Adding Components
+
+1. Create your component in `src/registry/new-york/blocks/your-component/`
+2. Add an entry to `registry.json`:
+
+```json
+{
+	"name": "your-component",
+	"type": "registry:component",
+	"title": "Your Component",
+	"description": "Description of your component",
+	"registryDependencies": [],
+	"files": [
+		{
+			"path": "registry/new-york/blocks/your-component/your-component.tsx",
+			"type": "registry:component"
+		}
+	]
+}
+```
+
+3. Run `npm run registry:build` to build the registry
+4. The component will be available at `/r/your-component.json`
+
+## Deployment
+
+This project is configured for Cloudflare Workers deployment. To deploy:
+
+```bash
+npm run deploy
+```
+
+For other platforms, use standard Next.js deployment methods.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+- [shadcn/ui Documentation](https://ui.shadcn.com)
+- [shadcn Registry Documentation](https://ui.shadcn.com/docs/registry)
+- [Next.js Documentation](https://nextjs.org/docs)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+MIT
